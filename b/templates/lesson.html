@@ -170,9 +170,9 @@ body {
             <div class="task" data-correct="{{ task.correct_answer }}">
                 <p><strong>{{ task.question|safe }}</strong></p>
                 <div class="answers">
-                    <button class="answer" data-value="{{ task.answer1|escape }}">{{ task.answer1|safe }}</button>
                     <button class="answer" data-value="{{ task.answer2|escape }}">{{ task.answer2|safe }}</button>
                     <button class="answer" data-value="{{ task.answer3|escape }}">{{ task.answer3|safe }}</button>
+                    <button class="answer" data-value="{{ task.answer4|escape }}">{{ task.answer4|safe }}</button>
                     <button class="answer" data-value="{{ task.correct_answer|escape }}">{{ task.correct_answer|safe }}</button>
                 </div>
                 <div class="feedback"></div>

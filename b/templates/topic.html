@@ -1,0 +1,46 @@
+{% extends 'navbar.html' %}
+{% block content %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ topic.title }}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<style>
+
+    @font-face {
+        font-family: Comfortaa;
+        src: url("{% static 'fonts/Comforta.ttf' %}");
+    }
+
+    body {
+
+        font-family: Comfortaa;
+
+    }
+
+</style>
+
+<body>
+    <div class="container">
+        <h1>{{ subject.title }}</h1>
+        <h2>{{ topic.title }}</h2>
+        <h3>Lessons</h3>
+        <ul class="lessons-list">
+            {% for lesson in lessons %}
+            <li><a href="{% url 'lesson' subject.slug topic.slug lesson.slug %}">{{ lesson.title }}</a></li>
+            {% endfor %}
+        </ul>
+        <a class="back-link" href="{% url 'subject' subject.slug %}">← Back to Topics</a>
+    </div>
+</body>
+</html>
+
+
+{% endblock %}

@@ -1,0 +1,319 @@
+{% extends 'navbar.html' %}
+{% block content %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Периодическая таблица Менделеева</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f6f6f6;
+            display: flex;
+            flex-direction: row;
+        }
+        .main-content {
+            flex: 1;
+        }
+        .table {
+            display: grid;
+            grid-template-columns: repeat(18, 60px);
+            gap: 5px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+        .element {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .element:hover {
+            transform: scale(1.05);
+        }
+        .alkali-metal { background-color: #ffcccb; }
+        .alkaline-earth-metal { background-color: #add8e6; }
+        .transition-metal { background-color: #d3d3d3; }
+        .post-transition-metal { background-color: #f0e68c; }
+        .metalloid { background-color: #98fb98; }
+        .non-metal { background-color: #dda0dd; }
+        .halogen { background-color: #ffb6c1; }
+        .noble-gas { background-color: #b0e0e6; }
+        .legend {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .description-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: sticky;
+            top: 20px;
+            margin-left: 20px;
+        }
+        .description, .additional-text {
+            width: 250px;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .legend ul li:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .legend ul li:hover ~ .table .alkali-metal,
+        .legend ul li:nth-child(1):hover .alkali-metal {
+            background-color: #ff9999 !important;
+        }
+        .legend ul li:nth-child(2):hover ~ .table .alkaline-earth-metal {
+            background-color: #88c1e6 !important;
+        }
+        /* Добавьте аналогичные правила для других категорий */
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1 style="text-align: center;">Периодическая таблица Менделеева</h1>
+        <div>
+            <label for="temperature">Температура (°C): </label>
+            <input type="range" id="temperature" min="-273" max="5000" step="10" value="20" oninput="updateTemperature(this.value)">
+            <span id="temperature-value">20°C</span>
+        </div>
+        <div class="table">
+            <div class="element alkali-metal" data-symbol="H" onclick="showDescription({
+                name: 'Hydrogen',
+                symbol: 'H',
+                number: 1,
+                state: 'Газ',
+                weight: '1.008',
+                energyLevel: '1s1',
+                electronegativity: '2.20',
+                meltingPoint: '-259.1',
+                boilingPoint: '-252.9',
+                electronAffinity: '72.8',
+                radius: '53'
+            })">
+                H<br><small>1</small><br><span>1.008</span>
+            </div>
+            <div class="element noble-gas" data-symbol="He" onclick="showDescription({
+                name: 'Helium',
+                symbol: 'He',
+                number: 2,
+                state: 'Газ',
+                weight: '4.0026',
+                energyLevel: '1s2',
+                electronegativity: 'N/A',
+                meltingPoint: '-272.2',
+                boilingPoint: '-268.9',
+                electronAffinity: 'N/A',
+                radius: '31'
+            })">
+                He<br><small>2</small><br><span>4.0026</span>
+            </div>
+            <!-- Добавьте остальные элементы -->
+        </div>
+        <div class="legend">
+            <h3>Легенда:</h3>
+            <ul>
+                <li style="color: #ffcccb;" onmouseover="highlightCategory('alkali-metal')" onmouseout="resetHighlight()">Щелочные металлы</li>
+                <li style="color: #add8e6;" onmouseover="highlightCategory('alkaline-earth-metal')" onmouseout="resetHighlight()">Щелочноземельные металлы</li>
+                <li style="color: #d3d3d3;" onmouseover="highlightCategory('transition-metal')" onmouseout="resetHighlight()">Переходные металлы</li>
+                <li style="color: #f0e68c;" onmouseover="highlightCategory('post-transition-metal')" onmouseout="resetHighlight()">Постпереходные металлы</li>
+                <li style="color: #98fb98;" onmouseover="highlightCategory('metalloid')" onmouseout="resetHighlight()">Полуметаллы</li>
+                <li style="color: #dda0dd;" onmouseover="highlightCategory('non-metal')" onmouseout="resetHighlight()">Неметаллы</li>
+                <li style="color: #ffb6c1;" onmouseover="highlightCategory('halogen')" onmouseout="resetHighlight()">Галогены</li>
+                <li style="color: #b0e0e6;" onmouseover="highlightCategory('noble-gas')" onmouseout="resetHighlight()">Благородные газы (галогены)</li>
+                <li style="color: #c0c0c0;" onmouseover="highlightCategory('metal')" onmouseout="resetHighlight()">Все металлы</li>
+            </ul>
+        </div>
+        
+        <!-- Кнопка для открытия окна соединений -->
+        <button onclick="toggleConnectionWindow()">Проверить соединения</button>
+        
+        <!-- Окно для перетаскивания элементов -->
+        <div id="connection-window" style="display: none; position: fixed; top: 20%; left: 30%; width: 40%; height: 50%; background: white; border: 2px solid black; border-radius: 10px; padding: 20px; z-index: 1000; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);">
+            <h3>Перетащите элементы для проверки соединений</h3>
+            <div id="drag-area" style="border: 2px dashed #ccc; height: 150px; padding: 10px; text-align: center; line-height: 150px;">
+                Перетащите сюда элементы
+            </div>
+            <div id="result" style="margin-top: 20px;"></div>
+            <button onclick="toggleConnectionWindow()">Закрыть</button>
+        </div>
+
+    </div>
+    <div class="description-container">
+        <div class="description" id="description">
+            <h2>Выберите элемент, чтобы увидеть описание.</h2>
+        </div>
+        <div class="additional-text">
+            <h3>Дополнительная информация</h3>
+            <p>Выберите элемент, чтобы увидеть подробности.</p>
+        </div>
+    </div>
+    <script>
+        const temperatureSpan = document.getElementById('temperature-value');
+
+        function updateTemperature(value) {
+            temperatureSpan.textContent = `${value}°C`;
+        }
+
+        function showDescription(element) {
+            const descriptionDiv = document.getElementById('description');
+            const state = determineState(element, parseInt(temperatureSpan.textContent));
+
+            descriptionDiv.innerHTML = `
+                <h2>${element.name} (${element.symbol})</h2>
+                <p><strong>Атомный номер:</strong> ${element.number}</p>
+                <p><strong>Агрегатное состояние:</strong> ${state}</p>
+                <p><strong>Вес:</strong> ${element.weight}</p>
+                <p><strong>Энергетический уровень:</strong> ${element.energyLevel}</p>
+                <p><strong>Электроотрицательность:</strong> ${element.electronegativity}</p>
+                <p><strong>Температура плавления:</strong> ${element.meltingPoint}°C</p>
+                <p><strong>Температура кипения:</strong> ${element.boilingPoint}°C</p>
+                <p><strong>Энергия сродства к электрону:</strong> ${element.electronAffinity} kJ/mol</p>
+                <p><strong>Радиус:</strong> ${element.radius} pm</p>
+            `;
+        }
+
+        function determineState(element, temperature) {
+            if (temperature < element.meltingPoint) {
+                return 'Твёрдое';
+            } else if (temperature >= element.meltingPoint && temperature < element.boilingPoint) {
+                return 'Жидкое';
+            } else {
+                return 'Газообразное';
+            }
+        }
+
+        function highlightCategory(category) {
+            document.querySelectorAll(`.${category}`).forEach(el => el.style.backgroundColor = '#FFD700');
+        }
+
+        function resetHighlight() {
+            document.querySelectorAll('.element').forEach(el => el.style.backgroundColor = '');
+        }
+    </script>
+
+    <script>
+        const elementsData = {
+            H: { name: 'Hydrogen', canReactWith: ['O', 'Cl', 'F', 'N'] },
+            He: { name: 'Helium', canReactWith: [] },
+            Li: { name: 'Lithium', canReactWith: ['Cl', 'O'] },
+            Be: { name: 'Beryllium', canReactWith: ['O'] },
+            B: { name: 'Boron', canReactWith: ['F'] },
+            C: { name: 'Carbon', canReactWith: ['O', 'H'] },
+            N: { name: 'Nitrogen', canReactWith: ['H'] },
+            O: { name: 'Oxygen', canReactWith: ['H', 'C'] },
+            F: { name: 'Fluorine', canReactWith: ['H'] },
+            Ne: { name: 'Neon', canReactWith: [] },
+            Cl: { name: 'Chlorine', canReactWith: ['H', 'Na'] },
+            Na: { name: 'Sodium', canReactWith: ['Cl'] }
+            // Добавьте все элементы и их совместимость.
+        };
+
+        // Переключение окна соединений
+        function toggleConnectionWindow() {
+            const connectionWindow = document.getElementById('connection-window');
+            connectionWindow.style.display = connectionWindow.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Перетаскивание элементов
+        const dragArea = document.getElementById('drag-area');
+        const resultDiv = document.getElementById('result');
+        const elements = document.querySelectorAll('.element');
+
+        elements.forEach(el => {
+            el.draggable = true; // Разрешить перетаскивание
+            el.addEventListener('dragstart', (e) => {
+                const elementSymbol = el.getAttribute('data-symbol'); // Получаем символ
+                e.dataTransfer.setData('text/plain', elementSymbol); // Передаем символ
+            });
+        });
+        
+        dragArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        
+        dragArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const draggedElementSymbol = e.dataTransfer.getData('text/plain'); // Символ перетаскиваемого элемента
+            const draggedElement = elementsData[draggedElementSymbol];
+        
+            if (!draggedElement) {
+                resultDiv.innerHTML = `<p>Элемент не распознан.</p>`;
+                return;
+            }
+        
+            resultDiv.innerHTML = `<h4>Соединения для ${draggedElement.name} (${draggedElementSymbol}):</h4>`;
+        
+            // Проверяем все элементы, с которыми H может взаимодействовать
+            Object.keys(elementsData).forEach((symbol) => {
+                const formula = generateFormula(draggedElementSymbol, symbol);
+        
+                if (formula) {
+                    resultDiv.innerHTML += `<div style="color: green;">${draggedElementSymbol} + ${symbol} → ${formula}</div>`;
+                }
+            });
+        });
+        
+        // Функция генерации формулы соединения
+        function generateFormula(element1, element2) {
+            // Правила для формирования формул с участием H
+            const combinations = {
+                'H+O': 'H2O', // Вода
+                'H+Cl': 'HCl', // Хлороводород
+                'H+F': 'HF', // Фтороводород
+                'H+Br': 'HBr', // Бромоводород
+                'H+I': 'HI', // Йодоводород
+                'H+N': 'NH3', // Аммиак
+                'H+S': 'H2S', // Сероводород
+                'H+C': 'CH4', // Метан
+                'H+Si': 'SiH4', // Силан
+                'H+P': 'PH3', // Фосфин
+                // Добавьте больше реакций, если нужно
+            };
+        
+            const key1 = `${element1}+${element2}`;
+            const key2 = `${element2}+${element1}`; // Проверяем реакцию в обратном порядке
+        
+            return combinations[key1] || combinations[key2] || null; // null для отсутствующих реакций
+        }
+        
+        
+
+        // Подсветка категорий
+        function highlightCategory(category) {
+            const elements = document.querySelectorAll(`.${category}`);
+            elements.forEach(el => {
+                el.style.backgroundColor = 'rgba(255, 215, 0, 0.8)';
+            });
+        }
+
+        function resetHighlight() {
+            const elements = document.querySelectorAll('.element');
+            elements.forEach(el => {
+                el.style.backgroundColor = '';
+            });
+        }
+    </script>
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'navbar.html' %}
+{% block content %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject.title }}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<style>
+
+    @font-face {
+        font-family: Comfortaa;
+        src: url("{% static 'fonts/Comforta.ttf' %}");
+    }
+
+    body {
+
+        font-family: Comfortaa;
+
+    }
+
+
+
+</style>
+
+<body>
+    <div class="container">
+
+        <div class="instruments">
+
+            <div class="instrumet">
+
+                <h4></h4>
+
+            </div>
+
+        </div>
+
+        <h1>{{ subject.title }}</h1>
+        <h2>Topics</h2>
+        <ul class="topics-list">
+            {% for topic in topics %}
+            <li><a href="{% url 'topic' subject.slug topic.slug %}">{{ topic.title }}</a></li>
+            {% endfor %}
+        </ul>
+        <a class="back-link" href="{% url 'landing' %}">← Back to Subjects</a>
+    </div>
+
+</body>
+</html>
+
+{% endblock %}

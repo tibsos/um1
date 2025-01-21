@@ -1,0 +1,402 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+    <link rel="stylesheet" href="/static/css/styles.css">
+
+    <script src="{% static 'packages/jquery.min.js' %}"></script>
+
+</head>
+
+<style>
+
+    @font-face {
+
+        font-family: Comfortaa;
+        src: url("{% static 'fonts/Comforta.ttf' %}");
+
+    }
+
+    body {
+
+        font-family: Comfortaa;
+
+        background: #f6eadf;
+
+    }
+
+    header {
+
+        position: relative;
+        top: 30px;
+        left: 5%;
+
+        width: 90%;
+        height: 80px;
+
+        border-radius: 200px;
+
+        box-shadow:  3px 3px 8px #d8cec4,
+        -3px -3px 8px #fffffa;
+
+    }
+
+    body.dark {
+
+        background: #151718;
+
+    }
+
+    .logo {
+
+        position: absolute;
+        left: 20px;
+        top: 10px;
+
+    }
+
+    .mode {
+
+        position: absolute;
+        right: -90px;
+        top: -40px;
+
+        transform: scale(0.3);
+
+        cursor: pointer;
+
+    }
+
+    .toggle-mode {
+
+        cursor: pointer;
+
+    }
+
+    /* Toggle mode btn */
+
+    .toggle-checkbox {
+
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+
+        z-index: 10;
+
+    }
+
+    .toggle-slot {
+
+        position: relative;
+        height: 10em;
+        width: 20em;
+        border-radius: 10em;
+        background: #f6eadf;
+        transition: background-color 250ms;
+        box-shadow:  3px 3px 8px #c5bbb2,
+                -3px -3px 8px #fffffa;
+
+        transition: all 1s ease-in-out;
+
+    }
+
+    .toggle-checkbox:checked ~ .toggle-slot {
+
+        background-color: #151718;
+
+        box-shadow:  4px 4px 8px #0a0b0c,
+                -4px -4px 8px #1c1e1f;
+
+    }
+
+    .toggle-button {
+
+        transform: translate(11.75em, 1.75em);
+        position: absolute;
+        height: 6.5em;
+        width: 6.5em;
+        border-radius: 50%;
+        background-color: #ffeccf;
+        box-shadow: inset 0px 0px 0px 0.75em #ffbb52;
+        transition: all 1s ease-in-out, transform 500ms cubic-bezier(.26,2,.46,.71);
+    
+    }
+
+    .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+
+        background-color: #1c1e1f;
+        box-shadow: inset 0px 0px 0px 0.75em #fff;
+        transform: translate(1.75em, 1.75em);
+
+    }
+
+    .sun-icon {
+
+        position: absolute;
+        height: 6em;
+        width: 6em;
+        color: #ffbb52;
+
+        transition: all 1s ease-in-out;
+
+    }
+
+    .sun-icon-wrapper {
+
+        position: absolute;
+        height: 6em;
+        width: 6em;
+        opacity: 1;
+        transform: translate(2em, 2em) rotate(15deg);
+        transform-origin: 50% 50%;
+        transition: opacity 150ms, transform 500ms cubic-bezier(.26,2,.46,.71);
+    
+    }
+
+    .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+
+        opacity: 0;
+        transform: translate(3em, 2em) rotate(0deg);
+
+    }
+
+    .moon-icon {
+
+        position: absolute;
+        height: 6em;
+        width: 6em;
+        color: #fff;
+
+        transition: all 1s ease-in-out;
+
+    }
+
+    .moon-icon-wrapper {
+
+        position: absolute;
+        height: 6em;
+        width: 6em;
+        opacity: 0;
+        transform: translate(11em, 2em) rotate(0deg);
+        transform-origin: 50% 50%;
+        transition: opacity 150ms, transform 500ms cubic-bezier(.26,2.5,.46,.71);
+    
+    }
+
+    .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+
+        opacity: 1;
+        transform: translate(12em, 2em) rotate(-15deg);
+
+    }
+
+    .main {
+
+        position: relative;
+        top: 100px;
+        left: 50px;
+
+        width: calc(100% - 100px);
+
+    }
+
+    /* DARK MODE */
+
+    .logo-dark svg g {
+
+        fill: #fff;
+
+    }
+
+    .subject-dark {
+
+        box-shadow:  4px 4px 8px #0e1011,
+            -4px -4px 8px #1c1e1f;
+
+    }
+
+    .header-dark {
+
+        box-shadow:  4px 4px 8px #0e1011,
+            -4px -4px 8px #1c1e1f;
+
+    }
+
+    .copyright-wrapper {
+
+        position: absolute;
+        bottom: 20px;
+        left: 50px;
+
+    }
+
+</style>
+
+<body>
+
+    <header>
+
+        <a href="/">
+
+            <div class="logo">
+
+                <svg height="60px" width="60px" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                    viewBox="0 0 512 512"  xml:space="preserve">
+                <g>
+                    <path class="st0" d="M480.077,132.02c-23.996-41.568-76.299-41.765-128.908-27.608C344.548,61.842,323.763,0,260.719,0
+                        c-47.99,0-74.289,45.078-88.348,97.686C132.215,82.225,68.165,69.275,36.641,123.98c-23.991,41.568,1.911,86.942,40.46,125.392
+                        c-33.529,27.011-76.701,76-45.176,130.608c23.996,41.568,76.299,41.765,128.804,27.608C167.454,450.156,188.233,512,251.283,512
+                        c47.986,0,74.289-45.176,88.343-97.784c40.26,15.559,104.206,28.411,135.73-26.196c23.996-41.471-1.906-86.843-40.455-125.294
+                        C468.43,235.617,511.596,186.627,480.077,132.02z M446.743,375.166c-20.882,36.04-70.573,24.892-101.396,13.549
+                        c6.828-35.736,8.936-72.284,8.936-98.382h-18.672c0,22.991-3.715,56.52-11.848,89.147c-2.107,8.334-4.515,16.569-7.225,24.598
+                        c-13.956,41.862-36.245,76.696-68.367,76.696c-41.662,0-56.922-48.588-62.447-80.911c34.436-11.952,67.064-28.412,89.652-41.559
+                        l-9.338-16.166c-19.877,11.44-50.798,25-83.122,34.235c-8.334,2.412-16.667,4.52-25.001,6.118
+                        c-43.167,8.844-84.426,7.03-100.49-20.882c-20.784-36.039,13.554-73.48,38.853-94.568c27.608,23.794,58.122,43.872,80.814,56.921
+                        l9.338-16.157c-19.878-11.45-47.089-31.529-71.279-55.019c-6.123-5.922-12.049-12.039-17.672-18.373
+                        c-29.314-33.029-48.289-69.667-32.226-97.578c20.785-36.04,70.476-24.892,101.3-13.549c-6.828,35.735-8.937,72.284-8.937,98.382
+                        h18.775c0-22.991,3.711-56.52,11.842-89.147c2.108-8.334,4.52-16.667,7.231-24.696c13.956-41.862,36.24-76.598,68.367-76.598
+                        c41.662,0,56.921,48.589,62.441,80.912c-34.43,11.95-67.161,28.412-89.75,41.559l9.436,16.166c19.78-11.44,50.701-25,83.128-34.235
+                        c8.23-2.412,16.564-4.52,24.897-6.118c43.27-8.844,84.529-7.03,100.593,20.882c20.779,36.039-13.554,73.48-38.853,94.568
+                        c-27.608-23.794-58.226-43.872-80.814-56.921l-9.338,16.156c19.775,11.452,47.084,31.53,71.177,55.02
+                        c6.225,5.921,12.146,12.148,17.769,18.47C443.832,310.617,462.807,347.254,446.743,375.166z"/>
+                    <path class="st0" d="M256.003,220.02c-19.868,0-35.975,16.098-35.975,35.97c0,19.872,16.108,35.98,35.975,35.98
+                        c19.864,0,35.971-16.108,35.971-35.98C291.974,236.117,275.867,220.02,256.003,220.02z"/>
+                </g>
+                </svg>
+    
+            </div>
+
+        </a>
+
+        <div class="mode-btn">
+
+            <div class="mode">
+    
+                <label class="toggle-mode">
+
+                    <input class="toggle-checkbox" id="modeCB" type="checkbox">
+
+                    <div class="toggle-slot">
+                    <div class="sun-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify sun-icon" data-icon="feather-sun" data-inline="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></g></svg>
+                    </div>
+                    <div class="toggle-button"></div>
+                    <div class="moon-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" class="iconify moon-icon" data-icon="feather-moon" data-inline="false"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79"></path></svg>
+                    </div>
+                    </div>
+
+                </label>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    {% block content %}
+    {% endblock %}
+
+    <footer>
+
+        <div class="copyright-wrapper">
+
+            <h4>© Умник 2025</h4>
+
+        </div>
+
+    </footer>
+
+    <!-- SUBJECT CLICK -->
+    <script>
+
+        $('.subject').click(function() {
+
+            btn = $(this);
+
+            btn.addClass('checked');
+
+            setTimeout(function() {
+
+                btn.removeClass('checked');
+
+            }, 250);
+
+        });
+
+    </script>
+
+    <!-- MODE -->
+    <script>
+    // Function to get a cookie by name
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // Function to set a cookie
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+    }
+
+    // Apply dark mode based on cookie
+    function applyModeFromCookie() {
+        const darkMode = getCookie('dark_mode') === 'true';
+        if (darkMode) {
+
+            document.body.classList.add('dark');
+
+            $('.subject').addClass('subject-dark');
+            $('header').addClass('header-dark');
+            $('.logo').addClass('logo-dark');
+
+            document.getElementById('modeCB').checked = true;
+
+        } else {
+
+            document.body.classList.remove('dark');
+
+            document.getElementById('modeCB').checked = false;
+
+        }
+    }
+
+    // Toggle mode and save to cookie
+    function toggleMode() {
+        const isChecked = document.getElementById('modeCB').checked;
+        if (isChecked) {
+            document.body.classList.add('dark');
+        } else {
+            document.body.classList.remove('dark');
+            $('.subject').removeClass('subject-dark');
+            $('header').removeClass('header-dark');
+        }
+        setCookie('dark_mode', isChecked, 30); // Save for 30 days
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function () {
+
+        applyModeFromCookie();
+
+        document.getElementById('modeCB').addEventListener('change', toggleMode);
+
+    });
+</script>
+
+
+    </script>
+
+</body>

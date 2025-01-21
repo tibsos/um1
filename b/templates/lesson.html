@@ -33,6 +33,26 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.lesson-thumbnail-wrapper {
+
+    position: relative;
+    width: 100%;
+    height: 600px;
+
+
+
+}
+
+#lessonThumbnail {
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+}
+
 .lesson-title {
     font-size: 28px;
     margin-bottom: 20px;
@@ -158,6 +178,16 @@ body {
 
 <body>
     <main class="container">
+
+        <div class="lesson-thumbnail-wrapper">
+
+            <img 
+                id="lessonThumbnail" 
+                src="{{ lesson.thumbnail.url }}" 
+                alt="Урок">
+
+        </div>
+
         <h1 class="lesson-title">{{ lesson.title }}</h1>
         <div class="lesson-content">
             {{ lesson.content|safe }}

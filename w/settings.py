@@ -109,7 +109,7 @@ TELEGRAM_CHAT_ID = '7482542861'  # Add your chat ID or user ID
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-TINYMCE_DEFAULT_CONFIG = {
+""" TINYMCE_DEFAULT_CONFIG = {
     'cleanup_on_startup': True,
     'custom_undo_redo_levels': 20,
     'selector': 'textarea',
@@ -134,4 +134,4 @@ TINYMCE_DEFAULT_CONFIG = {
     'contextmenu': 'formats | link image',
     'menubar': True,
     'statusbar': True,
-} 
+}  """

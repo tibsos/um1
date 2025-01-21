@@ -10,7 +10,7 @@ class Subject(m.Model):
     title = m.CharField(max_length=200)
     slug = m.SlugField(unique=True)
 
-    image = m.ImageField(upload_to='subjects/', blank=True, null=True)
+    image = m.ImageField(upload_to='img/subjects/', blank=True, null=True)
     
     created_at = m.DateTimeField(auto_now_add=True)
 
@@ -42,6 +42,7 @@ class Lesson(m.Model):
     subject = m.ForeignKey(Subject, on_delete=m.CASCADE, related_name='lesson_subject')
     topic = m.ForeignKey(Topic, on_delete=m.CASCADE, related_name='lesson_topic')
     
+    thumbnail = m.ImageField(upload_to = 'img/lesson')
     title = m.CharField(max_length=200)
     slug = m.SlugField(unique=True)
     

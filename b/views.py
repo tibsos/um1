@@ -13,7 +13,7 @@ def subject(request, subject_slug):
 def topic(request, subject_slug, topic_slug):
     subject = get_object_or_404(Subject, slug=subject_slug)
     topic = get_object_or_404(Topic, slug=topic_slug, subject=subject)
-    lessons = topic.lessons.all()
+    lessons = Lesson.objects.filter(topic=topic)
     return render(request, 'topic.html', {'subject': subject, 'topic': topic, 'lessons': lessons})
 
 def lesson(request, subject_slug, topic_slug, lesson_slug):

@@ -33,26 +33,6 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.breadcrumb {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: #666;
-}
-
-.breadcrumb-link {
-    text-decoration: none;
-    color: #007BFF;
-}
-
-.breadcrumb-link:hover {
-    text-decoration: underline;
-}
-
-.breadcrumb-current {
-    font-weight: bold;
-    color: #333;
-}
-
 .lesson-title {
     font-size: 28px;
     margin-bottom: 20px;
@@ -92,7 +72,13 @@ body {
     transition: background-color 0.2s;
 }
 
-.task button:hover {
+.task button:disabled {
+    background-color: #f0f0f0;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.task button:hover:enabled {
     background-color: #dcdcdc;
 }
 
@@ -111,6 +97,52 @@ body {
     color: red;
 }
 
+.explanation {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #555;
+}
+
+.show-explanation-button {
+    margin-top: 10px;
+    background-color: #e0e0e0;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: not-allowed;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.show-explanation-button.correct {
+    background-color: #28a745;
+    cursor: pointer;
+}
+
+.show-explanation-button:hover.correct {
+    background-color: #218838;
+}
+
+.restart-button {
+    margin-top: 30px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.restart-button:hover {
+    background-color: #0056b3;
+}
+
 .back-link {
     margin-top: 20px;
     display: inline-block;
@@ -126,12 +158,10 @@ body {
 
 <body>
     <main class="container">
-        <h1>{{ lesson.title }}</h1>
-        <!-- Lesson Content -->
         <h1 class="lesson-title">{{ lesson.title }}</h1>
         <div class="lesson-content">
             {{ lesson.content|safe }}
-       
+        </div>
 
         <!-- Tasks Section -->
         <h2>Tasks</h2>
@@ -140,46 +170,93 @@ body {
             <div class="task" data-correct="{{ task.correct_answer }}">
                 <p><strong>{{ task.question|safe }}</strong></p>
                 <div class="answers">
-                    <button class="answer" data-value="1">{{ task.answer2|safe }}</button>
-                    <button class="answer" data-value="2">{{ task.answer3|safe }}</button>
-                    <button class="answer" data-value="3">{{ task.answer4|safe }}</button>
-                    <button class="answer" data-value="4">{{ task.correct_answer|safe }}</button>
+                    <button class="answer" data-value="{{ task.answer1|escape }}">{{ task.answer1|safe }}</button>
+                    <button class="answer" data-value="{{ task.answer2|escape }}">{{ task.answer2|safe }}</button>
+                    <button class="answer" data-value="{{ task.answer3|escape }}">{{ task.answer3|safe }}</button>
+                    <button class="answer" data-value="{{ task.correct_answer|escape }}">{{ task.correct_answer|safe }}</button>
                 </div>
                 <div class="feedback"></div>
+                <button class="show-explanation-button">Объяснение</button>
+                <div class="explanation" style="display: none;">{{ task.explanation|safe }}</div>
             </div>
             {% endfor %}
         </div>
 
+        <button class="restart-button">Перезапустить тест</button>
+
         <a href="{% url 'topic' subject.slug topic.slug %}" class="back-link">← Назад к {{ topic.title }}</a>
-    </div>
-</main>
-    <audio id="correct-sound" src="/static/sounds/correct.mp3" preload="auto"></audio>
-    <audio id="wrong-sound" src="/static/sounds/wrong.mp3" preload="auto"></audio>
+    </main>
+    <audio id="correct-sound" src="{% static 'sounds/correct.mp3' %}" preload="auto"></audio>
+    <audio id="wrong-sound" src="{% static 'sounds/wrong.mp3' %}" preload="auto"></audio>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".task").forEach(task => {
+            const tasks = document.querySelectorAll(".task");
+            const restartButton = document.querySelector(".restart-button");
+
+            function resetTest() {
+                tasks.forEach(task => {
+                    const feedbackDiv = task.querySelector(".feedback");
+                    const explanationDiv = task.querySelector(".explanation");
+                    const explanationButton = task.querySelector(".show-explanation-button");
+                    const answerButtons = task.querySelectorAll(".answer");
+
+                    feedbackDiv.textContent = "";
+                    feedbackDiv.classList.remove("correct", "incorrect");
+                    explanationDiv.style.display = "none";
+                    explanationButton.classList.remove("correct");
+                    explanationButton.style.cursor = "not-allowed";
+                    explanationButton.style.backgroundColor = "#e0e0e0";
+                    explanationButton.disabled = true;
+
+                    answerButtons.forEach(button => {
+                        button.disabled = false;
+                    });
+                });
+            }
+
+            tasks.forEach(task => {
                 const correctAnswer = task.dataset.correct.trim();
                 const feedbackDiv = task.querySelector(".feedback");
+                const explanationDiv = task.querySelector(".explanation");
+                const explanationButton = task.querySelector(".show-explanation-button");
                 const answerButtons = task.querySelectorAll(".answer");
+
+                explanationButton.disabled = true;
 
                 answerButtons.forEach(button => {
                     button.addEventListener("click", function () {
+                        if (button.disabled) return;
+
                         const userAnswer = button.dataset.value.trim();
                         if (userAnswer === correctAnswer) {
                             feedbackDiv.textContent = "Правильно!";
                             feedbackDiv.classList.add("correct");
                             feedbackDiv.classList.remove("incorrect");
                             document.getElementById("correct-sound").play();
+
+                            explanationButton.classList.add("correct");
+                            explanationButton.style.cursor = "pointer";
+                            explanationButton.disabled = false;
                         } else {
-                            feedbackDiv.textContent = "Неправильно, попробуйте еще раз!";
+                            feedbackDiv.textContent = "Неправильно!";
                             feedbackDiv.classList.add("incorrect");
                             feedbackDiv.classList.remove("correct");
                             document.getElementById("wrong-sound").play();
                         }
+
+                        answerButtons.forEach(btn => btn.disabled = true);
                     });
                 });
+
+                explanationButton.addEventListener("click", function () {
+                    if (!explanationButton.disabled) {
+                        explanationDiv.style.display = "block";
+                    }
+                });
             });
+
+            restartButton.addEventListener("click", resetTest);
         });
     </script>
 </body>

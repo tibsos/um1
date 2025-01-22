@@ -24,7 +24,7 @@
 
     }
 
-    body {
+    body, input, button {
 
         font-family: Comfortaa;
 
@@ -43,7 +43,7 @@
 
         border-radius: 200px;
 
-        box-shadow:  3px 3px 8px #d8cec4,
+        box-shadow: 3px 3px 8px #d8cec4,
         -3px -3px 8px #fffffa;
 
     }
@@ -239,11 +239,54 @@
 
     }
 
+    .search-bar-wrapper {
+
+        position: relative;
+        width: 100%;
+
+    }
+
     #searchQuery {
 
         position: relative;
-        top: 30px;
+        top: 18px;
         left: 100px;
+
+        width: 300px;
+        height: 40px;
+
+        padding-top: 5px;
+        padding-left: 22px;
+
+        background: none;
+
+        border-radius: 999px;
+
+        border: none;
+
+        box-shadow: inset 3px 3px 8px #d8cec4,
+        inset -3px -3px 8px #fffffa;
+
+        font-size: 21px;
+
+    }
+
+    #searchBtn {
+
+        position: relative;
+        right: -40px;
+        top: 15px;
+
+        width: 30px;
+        height: 30px;
+
+        border: none;
+        border-radius: 999px;
+
+        box-shadow: 3px 3px 8px #d8cec4,
+        -3px -3px 8px #fffffa;
+
+        cursor: pointer;
 
     }
 
@@ -269,6 +312,8 @@
                 type="text"
                 placeholder="Искать..."
                 id="searchQuery" />
+
+            <button id="searchBtn">()</button>
 
         </div>
 

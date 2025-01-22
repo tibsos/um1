@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from .models import *
+from django.http import JsonResponse
 
 def landing(request):
     subjects = Subject.objects.all()
@@ -51,3 +52,21 @@ def lesson(request, subject_slug, field_slug, topic_slug, lesson_slug):
     lesson = get_object_or_404(Lesson, slug=lesson_slug, topic=topic)
     
     return render(request, 'lesson.html', {'subject': subject, 'field': field, 'topic': topic, 'lesson': lesson})
+
+def ajax_search(request):
+    query = request.GET.get('q', '').strip()
+    if not query:
+        return JsonResponse({'results': []})
+    
+    subjects = Subject.objects.filter(title__icontains=query).values('title', 'slug')
+    fields = Field.objects.filter(title__icontains=query).values('title', 'slug')
+    topics = Topic.objects.filter(title__icontains=query).values('title', 'slug')
+    lessons = Lesson.objects.filter(title__icontains=query).values('title', 'slug')
+    
+    results = {
+        'subjects': list(subjects),
+        'fields': list(fields),
+        'topics': list(topics),
+        'lessons': list(lessons),
+    }
+    return JsonResponse({'results': results})

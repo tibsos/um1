@@ -212,7 +212,7 @@ body {
 
         <button class="restart-button">Перезапустить тест</button>
 
-        <a href="{% url 'topic' subject.slug topic.slug %}" class="back-link">← Назад к {{ topic.title }}</a>
+        <a href="{% url 'topic' subject.slug field.slug topic.slug %}" class="back-link">← Назад к {{ topic.title }}</a>
     </main>
     <audio id="correct-sound" src="{% static 'sounds/correct.mp3' %}" preload="auto"></audio>
     <audio id="wrong-sound" src="{% static 'sounds/wrong.mp3' %}" preload="auto"></audio>

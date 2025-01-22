@@ -42,11 +42,17 @@
         </div>
 
         <h1>{{ subject.title }}</h1>
-        <h2>Topics</h2>
+        
+        <h2>Разделы</h2>
+
         <ul class="topics-list">
-            {% for topic in topics %}
-            <li><a href="{% url 'topic' subject.slug topic.slug %}">{{ topic.title }}</a></li>
+
+            {% for field in fields %}
+            
+                <li><a href="{% url 'field' subject.slug field.slug %}">{{ field.title }}</a></li>
+            
             {% endfor %}
+
         </ul>
         <a class="back-link" href="{% url 'landing' %}">← Back to Subjects</a>
     </div>

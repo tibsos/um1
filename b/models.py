@@ -18,12 +18,27 @@ class Subject(m.Model):
 
         return self.title
 
+class Field(m.Model):
+    
+    uid = m.UUIDField(primary_key = True, default = uuid4, editable = False, verbose_name = "ID")
+
+    subject = m.ForeignKey(Subject, on_delete=m.CASCADE, related_name='field_subject', null = True, blank = True)
+    
+    title = m.CharField(max_length=200)
+    slug = m.SlugField(unique=True)
+    
+    created_at = m.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        
+        return f"{self.subject.title} - {self.title}"
 
 class Topic(m.Model):
     
     uid = m.UUIDField(primary_key = True, default = uuid4, editable = False, verbose_name = "ID")
 
-    subject = m.ForeignKey(Subject, on_delete=m.CASCADE, related_name='topics')
+    subject = m.ForeignKey(Subject, on_delete=m.CASCADE, related_name='topic_subject', null = True, blank = True)
+    field = m.ForeignKey(Field, on_delete=m.CASCADE, related_name='topics_field', null = True, blank = True)
     
     title = m.CharField(max_length=200)
     slug = m.SlugField(unique=True)
@@ -39,8 +54,9 @@ class Lesson(m.Model):
 
     uid = m.UUIDField(primary_key = True, default = uuid4, editable = False, verbose_name = "ID")
 
-    subject = m.ForeignKey(Subject, on_delete=m.CASCADE, related_name='lesson_subject')
-    topic = m.ForeignKey(Topic, on_delete=m.CASCADE, related_name='lesson_topic')
+    subject = m.ForeignKey(Subject, on_delete=m.CASCADE, related_name='lesson_subject', null = True, blank = True)
+    field = m.ForeignKey(Field, on_delete=m.CASCADE, related_name='lesson_field', null = True, blank = True)
+    topic = m.ForeignKey(Topic, on_delete=m.CASCADE, related_name='lesson_topic', null = True, blank = True)
     
     thumbnail = m.ImageField(upload_to = 'img/lesson')
     title = m.CharField(max_length=200)

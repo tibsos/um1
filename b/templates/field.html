@@ -28,27 +28,25 @@
 </style>
 
 <body>
-
     <div class="container">
-        
+
         <h1>{{ subject.title }}</h1>
         <h2>{{ topic.title }}</h2>
-        <h2>{{ field.title }}</h2>
-        <h3>Уроки</h3>
+        <h3>Темы</h3>
+       
+        <ul class="topics-list">
 
-        <ul class="lessons-list">
+            {% for topic in topics %}
 
-            {% for lesson in lessons %}
-
-                <li><a href="{% url 'lesson' subject.slug field.slug topic.slug lesson.slug %}">{{ lesson.title }}</a></li>
+                <li><a href="{% url 'topic' subject.slug field.slug topic.slug %}">{{ topic.title }}</a></li>
             
             {% endfor %}
 
         </ul>
-
+        
         <a class="back-link" href="{% url 'subject' subject.slug %}">← Back to Topics</a>
+    
     </div>
-
 </body>
 </html>
 

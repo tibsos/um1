@@ -26,6 +26,8 @@ class Field(m.Model):
     
     title = m.CharField(max_length=200)
     slug = m.SlugField(unique=True)
+
+    image = m.ImageField(upload_to='img/subjects/', blank=True, null=True)
     
     created_at = m.DateTimeField(auto_now_add=True)
 
@@ -42,6 +44,8 @@ class Topic(m.Model):
     
     title = m.CharField(max_length=200)
     slug = m.SlugField(unique=True)
+
+    image = m.ImageField(upload_to='img/subjects/', blank=True, null=True)
     
     created_at = m.DateTimeField(auto_now_add=True)
 

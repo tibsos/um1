@@ -67,6 +67,67 @@
 
     }
 
+    .fields-list {
+
+        position: relative;
+        left: 0;
+        top: 0;
+
+        width: 100%;
+
+        display: grid;
+        justify-content: center;
+        justify-items: center;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px; /* Расстояние между элементами */
+
+
+    }
+
+    .field-link {
+
+        width: 200px;
+
+        color: inherit;
+        text-decoration: none;
+
+    }
+
+    .field {
+
+        position: relative;
+
+        width: 200px;
+        height: 260px;
+
+        border-radius: 50px;
+
+        box-shadow: 3px 3px 8px #d8cec4,
+        -3px -3px 8px #fffffa;
+
+        cursor: pointer;
+
+    }
+
+    #fieldIMG {
+
+        width: 100%;
+        height: 80%;
+
+        border-radius: 20px 20px 0 0;
+
+    }
+
+    .field-title {
+        
+        position: relative;
+        top: -20px;
+
+        text-align: center;
+
+        font-size: 23px;
+
+    }
 
 </style>
 
@@ -92,11 +153,24 @@
         
         <h2>Разделы</h2>
 
-        <ul class="topics-list">
+        <ul class="fields-list">
 
             {% for field in fields %}
             
-                <li><a href="{% url 'field' subject.slug field.slug %}">{{ field.title }}</a></li>
+                <a href="{% url 'field' subject.slug field.slug %}" class="field-link">
+                
+                    <li class="field">
+
+                        <img 
+                        src="{{ field.image.url }}"
+                        id="fieldIMG"
+                        alt="">
+                    
+                        <h4 class="field-title">{{ field.title }}</h4>
+                        
+                    </li>
+
+                </a>
             
             {% endfor %}
 

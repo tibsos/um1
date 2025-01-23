@@ -64,3 +64,25 @@ def lesson(request, subject_slug, field_slug, topic_slug, lesson_slug):
     lesson = get_object_or_404(Lesson, slug=lesson_slug, topic=topic)
     
     return render(request, 'lesson.html', {'subject': subject, 'field': field, 'topic': topic, 'lesson': lesson})
+
+def ajax_search(request):
+    query = request.GET.get('q', '').strip()
+    if not query:
+        return JsonResponse({'results': []})  # Пустой ответ, если нет запроса
+
+    # Фильтрация данных
+    subjects = Subject.objects.filter(title__icontains=query).values('title', 'slug')
+    fields = Field.objects.filter(title__icontains=query).values('title', 'slug', 'subject__slug')
+    topics = Topic.objects.filter(title__icontains=query).values('title', 'slug', 'field__slug', 'field__subject__slug')
+    lessons = Lesson.objects.filter(title__icontains=query).values(
+        'title', 'slug', 'topic__slug', 'topic__field__slug', 'topic__field__subject__slug'
+    )
+
+    # Формирование данных для фронтенда
+    results = {
+        'subjects': [{'title': item['title'], 'url': f'/{item["slug"]}/'} for item in subjects],
+        'fields': [{'title': item['title'], 'url': f'/{item["subject__slug"]}/{item["slug"]}/'} for item in fields],
+        'topics': [{'title': item['title'], 'url': f'/{item["field__subject__slug"]}/{item["field__slug"]}/{item["slug"]}/'} for item in topics],
+        'lessons': [{'title': item['title'], 'url': f'/{item["topic__field__subject__slug"]}/{item["topic__field__slug"]}/{item["topic__slug"]}/{item["slug"]}/'} for item in lessons],
+    }
+    return JsonResponse({'results': results})

@@ -445,14 +445,15 @@
         $(document).ready(function () {
             const $searchQuery = $('#searchQuery');
             const $searchResults = $('#searchResults');
-    
+        
+            // Отправка запроса при вводе текста
             $searchQuery.on('input', function () {
                 const query = $(this).val().trim();
                 if (query.length === 0) {
                     $searchResults.hide();
                     return;
                 }
-    
+        
                 $.ajax({
                     url: "{% url 'ajax_search' %}",
                     data: { q: query },
@@ -462,16 +463,16 @@
                         if (results.subjects.length || results.fields.length || results.topics.length || results.lessons.length) {
                             html += '<ul>';
                             results.subjects.forEach(item => {
-                                html += `<li><a href="/subject/${item.slug}">${item.title}</a></li>`;
+                                html += `<li class="result-item"><a href="${item.url}" class="result-link">${item.title}</a></li>`;
                             });
                             results.fields.forEach(item => {
-                                html += `<li><a href="/field/${item.slug}">${item.title}</a></li>`;
+                                html += `<li class="result-item"><a href="${item.url}" class="result-link">${item.title}</a></li>`;
                             });
                             results.topics.forEach(item => {
-                                html += `<li><a href="/topic/${item.slug}">${item.title}</a></li>`;
+                                html += `<li class="result-item"><a href="${item.url}" class="result-link">${item.title}</a></li>`;
                             });
                             results.lessons.forEach(item => {
-                                html += `<li><a href="/lesson/${item.slug}">${item.title}</a></li>`;
+                                html += `<li class="result-item"><a href="${item.url}" class="result-link">${item.title}</a></li>`;
                             });
                             html += '</ul>';
                         } else {
@@ -484,13 +485,15 @@
                     }
                 });
             });
-    
+        
+            // Закрытие выпадающего списка при клике вне его области
             $(document).click(function (event) {
                 if (!$(event.target).closest('.search-bar-wrapper').length) {
                     $searchResults.hide();
                 }
             });
         });
+        
     </script>
 
 </body>

@@ -40,19 +40,17 @@
     } 
 
     header {
-
         position: relative;
-        top: 30px;
+        top: clamp(10px, 3vh, 30px); /* Адаптивный отступ сверху */
         left: 5%;
-
-        width: 90%;
-        height: 80px;
-
+    
+        width: 90%; /* Оставляем относительное значение ширины */
+        height: clamp(40px, 8vh, 80px); /* Высота адаптируется к экрану */
+    
         border-radius: 200px;
-
+    
         box-shadow: 3px 3px 8px #d8cec4,
-        -3px -3px 8px #fffffa;
-
+                    -3px -3px 8px #fffffa;
     }
 
     body.dark {
@@ -247,25 +245,23 @@
     }
 
     #searchQuery {
-
         position: relative;
-        top: 18px;
-        left: 100px;
-
-        width: 300px;
-        height: 40px;
-
+        top: clamp(5px, 2vh, 18px); /* Отступ сверху */
+        left: clamp(10px, 5vw, 100px); /* Адаптивный отступ слева */
+    
+        width: clamp(150px, 40vw, 300px); /* Ширина поля адаптируется от 150px до 300px */
+        height: clamp(25px, 5vh, 40px); /* Высота адаптируется */
+    
         padding-top: 5px;
         padding-left: 22px;
-
+    
         background: none;
-
+    
         border-radius: 999px;
-
+    
         border: none;
-
-        font-size: 21px;
-
+    
+        font-size: clamp(12px, 2vw, 21px); /* Шрифт адаптируется */
     }
 
     #searchBtn {

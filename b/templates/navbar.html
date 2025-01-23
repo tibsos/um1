@@ -32,6 +32,13 @@
 
     }
 
+    input {
+
+        box-shadow: inset 3px 3px 8px #d8cec4,
+        inset -3px -3px 8px #fffffa; 
+
+    } 
+
     header {
 
         position: relative;
@@ -217,13 +224,6 @@
 
     }
 
-    .subject-dark {
-
-        box-shadow:  4px 4px 8px #0e1011,
-            -4px -4px 8px #1c1e1f;
-
-    }
-
     .header-dark {
 
         box-shadow:  4px 4px 8px #0e1011,
@@ -264,9 +264,6 @@
 
         border: none;
 
-        box-shadow: inset 3px 3px 8px #d8cec4,
-        inset -3px -3px 8px #fffffa;
-
         font-size: 21px;
 
     }
@@ -287,6 +284,13 @@
         -3px -3px 8px #fffffa;
 
         cursor: pointer;
+
+    }
+
+    .SQ-dark {
+
+        box-shadow: inset 4px 4px 8px #0e1011,
+            inset -4px -4px 8px #1c1e1f;
 
     }
 
@@ -313,7 +317,6 @@
                 id="searchQuery" 
                 autocomplete="off"
             />
-            <button id="searchBtn">()</button>
             <div id="searchResults" style="position: absolute; top: 60px; left: 100px; width: 400px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none;"></div>
         </div>
 
@@ -420,10 +423,16 @@
         const isChecked = document.getElementById('modeCB').checked;
         if (isChecked) {
             document.body.classList.add('dark');
+            $('.subject').addClass('subject-dark');
+            $('header').addClass('header-dark');            
+            $('#searchQuery').addClass('SQ-dark');            
+            
         } else {
             document.body.classList.remove('dark');
             $('.subject').removeClass('subject-dark');
+            $('.subject-link').removeClass('subject-dark');
             $('header').removeClass('header-dark');
+            $('#searchQuery').removeClass('SQ-dark');            
         }
         setCookie('dark_mode', isChecked, 30); // Save for 30 days
     }

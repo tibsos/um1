@@ -222,7 +222,7 @@
 
     .logo svg  {
 
-        stroke: white;
+        stroke: #ffffff;
 
     }
 
@@ -238,6 +238,8 @@
         position: absolute;
         bottom: 20px;
         left: 50px;
+
+        fill: fffffa;
 
     }
 
@@ -406,7 +408,8 @@
 
             $('.subject').addClass('subject-dark');
             $('header').addClass('header-dark');
-            $('.logo').removeClass('logo-dark');
+            $('.logo').addClass('logo-dark');
+            $('.copyright-wrapper').addClass('copyright-wrapper-dark');
             
             document.getElementById('modeCB').checked = true;
             

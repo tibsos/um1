@@ -67,6 +67,10 @@
 
     }
 
+    .logo svg {
+        fill: black; 
+    }
+
     .mode {
 
         position: absolute;
@@ -216,9 +220,9 @@
 
     /* DARK MODE */
 
-    .logo-dark svg g {
+    .logo svg  {
 
-        fill: #fff;
+        stroke: white;
 
     }
 
@@ -231,7 +235,8 @@
 
     .copyright-wrapper {
 
-        position: relative;
+        position: absolute;
+        top: 700px;
         bottom: 20px;
         left: 50px;
 
@@ -240,6 +245,7 @@
     .search-bar-wrapper {
 
         position: relative;
+        left: 30px;
         width: 100%;
 
     }
@@ -401,14 +407,13 @@
 
             $('.subject').addClass('subject-dark');
             $('header').addClass('header-dark');
-            $('.logo').addClass('logo-dark');
-
+            $('.logo').removeClass('logo-dark');
+            
             document.getElementById('modeCB').checked = true;
-
+            
         } else {
-
+            
             document.body.classList.remove('dark');
-
             document.getElementById('modeCB').checked = false;
 
         }

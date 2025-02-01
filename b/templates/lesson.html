@@ -26,32 +26,149 @@
         </div>
 
         <!-- Tasks Section -->
-        <h2>Tasks</h2>
-        <div class="tasks-container">
+        <h2>Задания</h2>
+        <div class="tasks-container" id="tasksContainer">
             {% for task in lesson.tasks.all %}
-            <div class="task">
+            <div class="task" data-task-id="{{ task.id }}">
                 <p><strong>{{ task.question|safe }}</strong></p>
                 <div class="answers">
-                    <button>{{ task.answer2 }}</button>
-                    <button>{{ task.answer3 }}</button>
-                    <button>{{ task.answer4 }}</button>
-                    <button>{{ task.correct_answer }}</button>
+                    <button class="answer-btn" data-correct="false">{{ task.answer2 }}</button>
+                    <button class="answer-btn" data-correct="false">{{ task.answer3 }}</button>
+                    <button class="answer-btn" data-correct="false">{{ task.answer4 }}</button>
+                    <button class="answer-btn correct-answer" data-correct="true">{{ task.correct_answer }}</button>
+                </div>
+                <div class="feedback"></div>
+                <div class="explanation" style="display: none;">
+                    {{ task.explanation|safe }}
                 </div>
             </div>
             {% endfor %}
         </div>
 
-        <a href="{% url 'topic' subject.slug field.slug topic.slug %}" class="back-link">← Back to {{ topic.title }}</a>
-        
         <div class="container">
-
-
-            
+            <button class="restart-button" style="display: none;">Перезапустить тест</button>
+            <div id="final-score" style="display: none;">
+                <h3>Ваши очки: <span id="score">0</span> / <span id="totalTasks">{{ total_tasks }}</span></h3>
+                <p id="score-feedback"></p>
+            </div>
         </div>
-    
+
+        <a href="{% url 'topic' subject.slug field.slug topic.slug %}" class="back-link">← Вернуться к {{ topic.title }}</a>
+
     </main>
 
-    
+    <script>
+        // Select all answer buttons
+        const answerButtons = document.querySelectorAll('.answer-btn');
+        const tasksContainer = document.getElementById('tasksContainer');
+        const restartButton = document.querySelector('.restart-button');
+        const finalScoreDiv = document.getElementById('final-score');
+        const scoreSpan = document.getElementById('score');
+        const totalTasksSpan = document.getElementById('totalTasks');
+        const scoreFeedback = document.getElementById('score-feedback');
+        let answeredTasks = 0;
+        let totalTasks = document.querySelectorAll('.task').length;
+        let correctAnswers = 0;
+
+        // Function to reset the task display
+        function resetTasks() {
+            // Reset feedback and explanations
+            document.querySelectorAll('.feedback').forEach(feedback => feedback.textContent = '');
+            document.querySelectorAll('.feedback').forEach(feedback => feedback.classList.remove('correct', 'incorrect'));
+            document.querySelectorAll('.explanation').forEach(explanation => explanation.style.display = 'none');
+            
+            // Reset answer buttons
+            document.querySelectorAll('.answer-btn').forEach(button => {
+                button.disabled = false;
+                button.style.backgroundColor = '#e9e9e9';  // Reset background color
+            });
+
+            // Hide the restart button
+            restartButton.style.display = 'none';
+            finalScoreDiv.style.display = 'none';
+
+            // Reset answeredTasks counter and correct answers counter
+            answeredTasks = 0;
+            correctAnswers = 0;
+
+            // Reset score display
+            scoreSpan.textContent = 0;
+            scoreFeedback.textContent = '';
+        }
+
+        // Function to handle answer click
+        function handleAnswerClick(button) {
+            const task = button.closest('.task');
+            const isCorrect = button.getAttribute('data-correct') === 'true';
+            const feedback = task.querySelector('.feedback');
+            const explanation = task.querySelector('.explanation');
+
+            // Disable all answer buttons for this task
+            task.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                feedback.textContent = 'Correct!';
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+                correctAnswers++;
+            } else {
+                feedback.textContent = 'Incorrect. Try again!';
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+            }
+
+            // Show explanation if answer is correct
+            if (isCorrect) {
+                explanation.style.display = 'block';
+            }
+
+            // Track answered tasks
+            answeredTasks++;
+
+            // Update score
+            scoreSpan.textContent = correctAnswers;
+
+            // If all tasks are answered, show final score and restart button
+            if (answeredTasks === totalTasks) {
+                finalScoreDiv.style.display = 'block';
+                restartButton.style.display = 'block';
+                displayScoreFeedback();
+            }
+        }
+
+        // Function to display score feedback
+        function displayScoreFeedback() {
+            let feedback = '';
+            const percentage = (correctAnswers / totalTasks) * 100;
+
+            if (percentage === 100) {
+                feedback = 'Perfect score! Excellent work!';
+            } else if (percentage >= 80) {
+                feedback = 'Great job! Almost there!';
+            } else if (percentage >= 60) {
+                feedback = 'Good effort! Keep practicing!';
+            } else if (percentage >= 40) {
+                feedback = 'You\'re getting there. Try again!';
+            } else {
+                feedback = 'Needs improvement. Keep trying!';
+            }
+
+            scoreFeedback.textContent = feedback;
+        }
+
+        // Attach event listeners to answer buttons
+        answerButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                handleAnswerClick(this);
+            });
+        });
+
+        // Restart the test
+        restartButton.addEventListener('click', function () {
+            resetTasks();
+        });
+
+    </script>
 
 </body>
 
@@ -76,21 +193,16 @@
     }
     
     .lesson-thumbnail-wrapper {
-    
         position: relative;
         width: 100%;
         height: 600px;
-    
     }
     
     #lessonThumbnail {
-    
         position: relative;
         width: 100%;
         height: 100%;
-    
         object-fit: contain;
-    
     }
     
     .lesson-title {
@@ -131,32 +243,31 @@
         text-align: left;
         transition: background-color 0.2s;
     }
-    
+
     .task button:disabled {
         background-color: #f0f0f0;
         color: #aaa;
         cursor: not-allowed;
     }
-    
+
     .task button:hover:enabled {
         background-color: #dcdcdc;
     }
-    
+
     .feedback {
         margin-top: 10px;
         font-weight: bold;
-        padding: 5px;
         text-align: center;
     }
-    
+
     .correct {
         color: green;
     }
-    
+
     .incorrect {
         color: red;
     }
-    
+
     .explanation {
         margin-top: 10px;
         padding: 10px;
@@ -165,28 +276,7 @@
         border-radius: 5px;
         color: #555;
     }
-    
-    .show-explanation-button {
-        margin-top: 10px;
-        background-color: #e0e0e0;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        font-size: 14px;
-        cursor: not-allowed;
-        border-radius: 5px;
-        text-align: center;
-    }
-    
-    .show-explanation-button.correct {
-        background-color: #28a745;
-        cursor: pointer;
-    }
-    
-    .show-explanation-button:hover.correct {
-        background-color: #218838;
-    }
-    
+
     .restart-button {
         margin-top: 30px;
         background-color: #007BFF;
@@ -198,7 +288,7 @@
         border-radius: 5px;
         text-align: center;
     }
-    
+
     .restart-button:hover {
         background-color: #0056b3;
     }
@@ -214,9 +304,13 @@
     .back-link:hover {
         text-decoration: underline;
     }
-    </style>
+
+    #final-score {
+        margin-top: 20px;
+        text-align: center;
+    }
+</style>
 
 </html>
-
 
 {% endblock %}

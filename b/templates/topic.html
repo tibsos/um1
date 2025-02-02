@@ -25,29 +25,99 @@
 
     }
 
+    main {
+
+        position: relative;
+        top: 50px;
+
+        display: grid;
+        place-items: center;
+
+    }
+
+
+    .lessons-list {
+
+        list-style-type: none;
+
+    }
+
+    .lesson {
+
+        width: 500px;
+        height: 40px;
+
+        margin-bottom: 20px;
+
+        border-radius: 999px;
+
+        box-shadow: 3px 3px 8px #d8cec4,
+        -3px -3px 8px #fffffa;
+
+    }
+
+    .lesson-link {
+
+        text-decoration: none;
+        color: inherit;
+
+    }
+
+    .lesson-img {
+
+        width: 40px;
+        height: 100%;
+
+        border-radius: 999px;
+
+    }
+
+    .lesson-title {
+
+        position: relative;
+        left: 50px;  
+        top: -30px;
+
+        margin: 0;
+
+    }
+
+
 </style>
 
 <body>
 
-    <div class="container">
+    <main>
+
+        <div class="container">
         
-        <h1>{{ subject.title }}</h1>
-        <h2>{{ topic.title }}</h2>
-        <h2>{{ field.title }}</h2>
-        <h3>Уроки</h3>
+            <h1><a href="{% url 'subject' subject.slug %}">{{ subject.title }}</a> > <a href="{% url 'field' subject.slug field.slug %}">{{ field.title }}</a> > {{ topic.title }}</h1>
 
-        <ul class="lessons-list">
+            <h3>Уроки</h3>
+    
+            <ul class="lessons-list">
+    
+                {% for lesson in lessons %}
+    
+                    <li class="lesson">
+                        
+                        <a class="lesson-link" href="{% url 'lesson' subject.slug field.slug topic.slug lesson.slug %}">
+                            
+                            <img class="lesson-img" src="{{ lesson.thumbnail.url }}" alt="{{ lesson.title }} картинка">
+                            
+                            <h4 class="lesson-title">{{ lesson.title }}</h4>
+                        
+                        </a>
+                    
+                    </li>
+                
+                {% endfor %}
+    
+            </ul>
+    
+        </div>
 
-            {% for lesson in lessons %}
-
-                <li><a href="{% url 'lesson' subject.slug field.slug topic.slug lesson.slug %}">{{ lesson.title }}</a></li>
-            
-            {% endfor %}
-
-        </ul>
-
-        <a class="back-link" href="{% url 'subject' subject.slug %}">← Back to Topics</a>
-    </div>
+    </main>
 
 </body>
 </html>

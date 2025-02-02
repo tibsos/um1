@@ -252,7 +252,16 @@
 
     }
 
+    .search-icon {
+
+        position: absolute;
+        left: 105px;
+        top: 29px;
+
+    }
+
     #searchQuery {
+
         position: relative;
         top: clamp(5px, 2vh, 18px); /* Отступ сверху */
         left: clamp(10px, 5vw, 100px); /* Адаптивный отступ слева */
@@ -261,7 +270,7 @@
         height: clamp(25px, 5vh, 40px); /* Высота адаптируется */
     
         padding-top: 5px;
-        padding-left: 22px;
+        padding-left: 52px;
     
         background: none;
     
@@ -315,13 +324,19 @@
         </a>
 
         <div class="search-bar-wrapper">
+
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="23.835" height="23.841" viewBox="0 0 23.835 23.841">
+                <path id="Icon_ionic-ios-search" data-name="Icon ionic-ios-search" d="M4.78,26.609l6.629-6.691a9.447,9.447,0,1,1,1.434,1.452L6.257,28.018a1.02,1.02,0,0,1-1.44.037A1.027,1.027,0,0,1,4.78,26.609ZM18.832,21.45a7.46,7.46,0,1,0-5.276-2.185A7.414,7.414,0,0,0,18.832,21.45Z" transform="translate(-4.5 -4.493)"/>
+            </svg>
+
             <input 
                 type="text"
                 placeholder="Искать..."
                 id="searchQuery" 
-                autocomplete="off"
-            />
+                autocomplete="off" />
+
             <div id="searchResults" style="position: absolute; top: 60px; left: 100px; width: 400px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none;"></div>
+        
         </div>
 
 

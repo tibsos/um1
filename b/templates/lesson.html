@@ -12,23 +12,88 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Comfortaa, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .lesson-title {
+            font-size: 28px;
+            text-align: center;
+        }
+        .task {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .task button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #e9e9e9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .task button:hover {
+            background-color: #dcdcdc;
+        }
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .navigation-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .navigation-buttons button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
 </head>
 <body>
     <main class="container">
-
-        <div class="lesson-thumbnail-wrapper">
-            <img id="lessonThumbnail" src="{{ lesson.thumbnail.url }}" alt="Lesson Thumbnail">
-        </div>
-
         <h1 class="lesson-title">{{ lesson.title }}</h1>
         <div class="lesson-content">
             {{ lesson.content|safe }}
         </div>
 
-        <!-- Tasks Section -->
         <div class="tasks-container" id="tasksContainer">
             {% for task in lesson.tasks.all %}
-            <div class="task" data-task-id="{{ task.id }}">
+            <div class="task" data-task-id="{{ task.id }}" style="display: none;">
                 <p><strong>{{ task.question|safe }}</strong></p>
                 <div class="answers">
                     <button class="answer-btn" data-correct="false">{{ task.answer2 }}</button>
@@ -37,279 +102,71 @@
                     <button class="answer-btn correct-answer" data-correct="true">{{ task.correct_answer }}</button>
                 </div>
                 <div class="feedback"></div>
-                <div class="explanation" style="display: none;">
-                    {{ task.explanation|safe }}
-                </div>
+                <div class="explanation" style="display: none;">{{ task.explanation|safe }}</div>
             </div>
             {% endfor %}
         </div>
 
-        <div class="container">
-            <button class="restart-button" style="display: none;">Перезапустить тест</button>
-            <div id="final-score" style="display: none;">
-                <h3>Ваши очки: <span id="score">0</span> / <span id="totalTasks">{{ total_tasks }}</span></h3>
-                <p id="score-feedback"></p>
-            </div>
+        <div class="navigation-buttons">
+            <button id="prevBtn" style="display: none;">← Previous</button>
+            <button id="nextBtn" disabled>Next →</button>
         </div>
-
-        <a href="{% url 'topic' subject.slug field.slug topic.slug %}" class="back-link">← Вернуться к {{ topic.title }}</a>
-
     </main>
 
     <script>
-        // Select all answer buttons
-        const answerButtons = document.querySelectorAll('.answer-btn');
-        const tasksContainer = document.getElementById('tasksContainer');
-        const restartButton = document.querySelector('.restart-button');
-        const finalScoreDiv = document.getElementById('final-score');
-        const scoreSpan = document.getElementById('score');
-        const totalTasksSpan = document.getElementById('totalTasks');
-        const scoreFeedback = document.getElementById('score-feedback');
-        let answeredTasks = 0;
-        let totalTasks = document.querySelectorAll('.task').length;
-        let correctAnswers = 0;
+        const tasks = document.querySelectorAll('.task');
+        let currentTaskIndex = 0;
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
 
-        // Function to reset the task display
-        function resetTasks() {
-            // Reset feedback and explanations
-            document.querySelectorAll('.feedback').forEach(feedback => feedback.textContent = '');
-            document.querySelectorAll('.feedback').forEach(feedback => feedback.classList.remove('correct', 'incorrect'));
-            document.querySelectorAll('.explanation').forEach(explanation => explanation.style.display = 'none');
-            
-            // Reset answer buttons
-            document.querySelectorAll('.answer-btn').forEach(button => {
-                button.disabled = false;
-                button.style.backgroundColor = '#e9e9e9';  // Reset background color
+        function showTask(index) {
+            tasks.forEach((task, i) => {
+                task.style.display = i === index ? 'block' : 'none';
             });
-
-            // Hide the restart button
-            restartButton.style.display = 'none';
-            finalScoreDiv.style.display = 'none';
-
-            // Reset answeredTasks counter and correct answers counter
-            answeredTasks = 0;
-            correctAnswers = 0;
-
-            // Reset score display
-            scoreSpan.textContent = 0;
-            scoreFeedback.textContent = '';
+            prevBtn.style.display = index > 0 ? 'inline-block' : 'none';
+            nextBtn.style.display = index < tasks.length - 1 ? 'inline-block' : 'none';
+            nextBtn.disabled = true;
         }
 
-        // Function to handle answer click
-        function handleAnswerClick(button) {
-            const task = button.closest('.task');
-            const isCorrect = button.getAttribute('data-correct') === 'true';
-            const feedback = task.querySelector('.feedback');
-            const explanation = task.querySelector('.explanation');
-
-            // Disable all answer buttons for this task
-            task.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
-
-            if (isCorrect) {
-                feedback.textContent = 'Correct!';
-                feedback.classList.add('correct');
-                feedback.classList.remove('incorrect');
-                correctAnswers++;
-            } else {
-                feedback.textContent = 'Incorrect. Try again!';
-                feedback.classList.add('incorrect');
-                feedback.classList.remove('correct');
+        nextBtn.addEventListener('click', function() {
+            if (currentTaskIndex < tasks.length - 1) {
+                currentTaskIndex++;
+                showTask(currentTaskIndex);
             }
+        });
 
-            // Show explanation if answer is correct
-            if (isCorrect) {
-                explanation.style.display = 'block';
+        prevBtn.addEventListener('click', function() {
+            if (currentTaskIndex > 0) {
+                currentTaskIndex--;
+                showTask(currentTaskIndex);
             }
+        });
 
-            // Track answered tasks
-            answeredTasks++;
+        tasks.forEach(task => {
+            task.querySelectorAll('.answer-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const isCorrect = this.getAttribute('data-correct') === 'true';
+                    const feedback = task.querySelector('.feedback');
+                    const explanation = task.querySelector('.explanation');
 
-            // Update score
-            scoreSpan.textContent = correctAnswers;
-
-            // If all tasks are answered, show final score and restart button
-            if (answeredTasks === totalTasks) {
-                finalScoreDiv.style.display = 'block';
-                restartButton.style.display = 'block';
-                displayScoreFeedback();
-            }
-        }
-
-        // Function to display score feedback
-        function displayScoreFeedback() {
-            let feedback = '';
-            const percentage = (correctAnswers / totalTasks) * 100;
-
-            if (percentage === 100) {
-                feedback = 'Perfect score! Excellent work!';
-            } else if (percentage >= 80) {
-                feedback = 'Great job! Almost there!';
-            } else if (percentage >= 60) {
-                feedback = 'Good effort! Keep practicing!';
-            } else if (percentage >= 40) {
-                feedback = 'You\'re getting there. Try again!';
-            } else {
-                feedback = 'Needs improvement. Keep trying!';
-            }
-
-            scoreFeedback.textContent = feedback;
-        }
-
-        // Attach event listeners to answer buttons
-        answerButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                handleAnswerClick(this);
+                    if (isCorrect) {
+                        feedback.textContent = 'Correct!';
+                        feedback.classList.add('correct');
+                        feedback.classList.remove('incorrect');
+                        explanation.style.display = 'block';
+                        task.querySelectorAll('.answer-btn').forEach(btn => btn.disabled = true);
+                        nextBtn.disabled = false;
+                    } else {
+                        feedback.textContent = 'Incorrect. Try again!';
+                        feedback.classList.add('incorrect');
+                        feedback.classList.remove('correct');
+                    }
+                });
             });
         });
 
-        // Restart the test
-        restartButton.addEventListener('click', function () {
-            resetTasks();
-        });
-
+        showTask(currentTaskIndex);
     </script>
-
 </body>
-
-<style>
-    /* Общий стиль */
-    body {
-        font-family: Comfortaa, sans-serif;
-        background-color: #f4f4f9;
-        color: #333;
-        margin: 0;
-        padding: 0;
-    }
-    
-    .container {
-        max-width: 800px;
-        margin: 40px auto;
-        background: none;
-        padding: 20px;
-        border-radius: 40px;
-        box-shadow: 3px 3px 8px #d8cec4,
-        -3px -3px 8px #fffffa;
-    }
-    
-    .lesson-thumbnail-wrapper {
-        position: relative;
-        width: 100%;
-        height: 600px;
-    }
-    
-    #lessonThumbnail {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-    
-    .lesson-title {
-        font-size: 28px;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    
-    .lesson-content p {
-        text-align: justify;
-        font-size: 18px;
-        line-height: 1.6;
-        margin-bottom: 16px;
-    }
-    
-    .task {
-        margin-bottom: 20px;
-        padding: 15px;
-        background-color: #f9f9f9;
-        border-radius: 5px;
-        border: 1px solid #ddd;
-    }
-    
-    .task p {
-        font-weight: bold;
-    }
-    
-    .task button {
-        display: block;
-        width: 100%;
-        margin: 10px 0;
-        padding: 10px;
-        font-size: 16px;
-        background-color: #e9e9e9;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        cursor: pointer;
-        text-align: left;
-        transition: background-color 0.2s;
-    }
-
-    .task button:disabled {
-        background-color: #f0f0f0;
-        color: #aaa;
-        cursor: not-allowed;
-    }
-
-    .task button:hover:enabled {
-        background-color: #dcdcdc;
-    }
-
-    .feedback {
-        margin-top: 10px;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .correct {
-        color: green;
-    }
-
-    .incorrect {
-        color: red;
-    }
-
-    .explanation {
-        margin-top: 10px;
-        padding: 10px;
-        background-color: #f8f9fa;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        color: #555;
-    }
-
-    .restart-button {
-        margin-top: 30px;
-        background-color: #007BFF;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 5px;
-        text-align: center;
-    }
-
-    .restart-button:hover {
-        background-color: #0056b3;
-    }
-    
-    .back-link {
-        margin-top: 20px;
-        display: inline-block;
-        color: #555;
-        font-size: 16px;
-        text-decoration: none;
-    }
-    
-    .back-link:hover {
-        text-decoration: underline;
-    }
-
-    #final-score {
-        margin-top: 20px;
-        text-align: center;
-    }
-</style>
-
 </html>
-
 {% endblock %}

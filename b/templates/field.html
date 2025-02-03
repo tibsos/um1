@@ -25,28 +25,100 @@
 
     }
 
+    main {
+
+        position: relative;
+        top: 50px;
+
+        display: grid;
+        place-items: center;
+
+    }
+
+    .topics-list {
+
+        list-style-type: none;
+
+    }
+
+    .topic {
+
+        position: relative;
+
+        width: 600px;  
+        height: 60px;
+
+        margin-bottom: 30px;
+
+        border-radius: 999px;
+
+        box-shadow: 3px 3px 8px #d8cec4,
+            -3px -3px 8px #fffffa;  
+
+
+        cursor: pointer;
+
+    }
+
+    .topic-img {
+
+        width: 60px;
+        height: 100%;
+
+        border-radius: 999px;
+
+    }
+
+    .topic-url {
+
+        color: inherit;
+        text-decoration: none;
+
+    }
+
+    .topic-title {
+
+        position: relative;
+        top: -65px;
+        left: 80px;
+
+    }
+
 </style>
 
 <body>
-    <div class="container">
 
-        <h1>{{ subject.title }}</h1>
-        <h2>{{ topic.title }}</h2>
-        <h3>Темы</h3>
-       
-        <ul class="topics-list">
+    <main>
 
-            {% for topic in topics %}
+        <div class="container">
 
-                <li><a href="{% url 'topic' subject.slug field.slug topic.slug %}">{{ topic.title }}</a></li>
-            
-            {% endfor %}
-
-        </ul>
-        
-        <a class="back-link" href="{% url 'subject' subject.slug %}">← Back to Topics</a>
+            <h1><a href="{% url 'subject' subject.slug %}">{{ subject.title }}</a> > {{ field.title }}</h1>
+           
+            <ul class="topics-list">
     
-    </div>
+                {% for topic in topics %}
+    
+                    <li class="topic">
+
+                        <img class="topic-img" src="{{ topic.image.url }}" alt="{{ topic.title }} Картинка">
+                            
+                        <a class="topic-url" href="{% url 'topic' subject.slug field.slug topic.slug %}">
+                            
+                            <h2 class="topic-title">{{ topic.title }}</h2>
+                        
+                        </a>
+                        
+                    </li>
+                
+                {% endfor %}
+    
+            </ul>
+                    
+        </div>
+
+    </main>
+
+   
 </body>
 </html>
 

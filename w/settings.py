@@ -10,6 +10,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
 
     'umn1k.ru',
+    '127.0.0.1'
 
 ]
 
